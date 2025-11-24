@@ -5,18 +5,8 @@ Uniswap events → TimescaleDB
 - Duplicate events are overwritten
 - No 'NoneType' encode error
 """
-from helpers.SqlGenerators import sql_create_table, build_upsert_sql
+from asynceventScanner.helpers.SqlGenerators import sql_create_table, build_upsert_sql
 import json
-import sys
-from typing import Dict, List, Any
-from psycopg2 import pool
-import psycopg2
-from tqdm import tqdm
-from psycopg2.extras import execute_values, RealDictCursor
-import duckdb
-import shutil
-import os
-from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 def adaptDec(dec):
     return str(dec)
@@ -220,7 +210,7 @@ balanceFormat = {'block_number': 'BIGINT NOT NULL ', 'user_address': 'TEXT NOT N
 classifiedEventsFormat = {'block_number': 'BIGINT NOT NULL', 'tx_hash': 'TEXT NOT NULL','type': 'TEXT','amount': 'TEXT', 'senders': 'JSONB', 'receivers': 'JSONB', 'approvals': 'JSONB' }
 
 balancePrimaryKeys = []
-recordTable = Database("Record",path,  recordTableFormat, None, recordPrimaryKeys, 'block_number', pools)
+recordTable = Database("Record",path,  classifiedEventsFormat, None, recordPrimaryKeys, 'block_number', pools)
 recordBalanceTable = Database("RecordBalances",path, balanceFormat, None,('user_address', 'block_number'), 'block_number', pools, needsUnique=True, init = True, sql = True)
 # tableStats = Database("TableStats", ['table', 'blocks'], balanceFormat,balanceColumns,('user_address','token', 'block_number DESC' ),None, 'block_number', pools, needsUnique=False)
 classifiedEvents = Database("ClassifiedEvents",path,  classifiedEventsFormat, None, ('block_number', 'tx_hash'),  'block_number', pools, needsUnique = False, init=False)
