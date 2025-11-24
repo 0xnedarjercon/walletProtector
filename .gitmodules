@@ -1,0 +1,3 @@
+[submodule "asynceventScanner"]
+	path = asynceventScanner
+	url = https://github.com/0xnedarjercon/asynceventScanner.git
